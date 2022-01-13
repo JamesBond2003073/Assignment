@@ -48,6 +48,12 @@ public class Manager : MonoBehaviour
         //icon.LoadImage(texArray);
         go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
         go.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
+        RectTransform rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0f, 1f);
+        rect.anchorMax = new Vector2(0f, 1f);
+        rect.anchoredPosition = new Vector2(520f, -100f - (go.transform.GetSiblingIndex() * 220f));
+        rect.sizeDelta = new Vector2(1040f, 200f);
+
         contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 226f);
     }
 
