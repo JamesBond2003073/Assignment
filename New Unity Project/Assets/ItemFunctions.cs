@@ -57,14 +57,14 @@ public class ItemFunctions : MonoBehaviour
     {
         if (!isStarred)
         {
-            this.transform.GetChild(5).GetChild(0).gameObject.SetActive(true);
+            this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(true);
             manager.AddRepoItem(repoData, true);
             isStarred = true;
             starredItem = manager.starredItems[manager.starredItems.Count - 1];
         }
         else
         {
-            this.transform.GetChild(5).GetChild(0).gameObject.SetActive(false);
+            this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(false);
             //Debug.Log("Sibling remove- " + starredListIndex);
             manager.RemoveRepoItem(starredItem);
             isStarred = false;
