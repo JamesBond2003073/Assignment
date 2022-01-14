@@ -22,6 +22,8 @@ public class Manager : MonoBehaviour
     public RectTransform refreshUIArrowRect;
     public Image refreshUIArrowImage;
 
+    public RuntimeAnimatorController animControllerLoading;
+
     //private fields
     private RectTransform contentRect;
     private byte[] texArray;
@@ -45,7 +47,9 @@ public class Manager : MonoBehaviour
         canvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(Screen.currentResolution.height, Screen.currentResolution.width);
 
         contentRect = scrollRoot.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
+
         UpdateDataUI();
+
     }
 
     // Update is called once per frame
@@ -61,10 +65,10 @@ public class Manager : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            float mouseXNormalized = Input.mousePosition.x / Screen.width;
-            float mouseYNormalized = Input.mousePosition.y / Screen.height;
+            //float mouseXNormalized = Input.mousePosition.x / Screen.width;
+            //float mouseYNormalized = Input.mousePosition.y / Screen.height;
 
-            if (mouseXNormalized > 0.4f && mouseXNormalized < 0.6f && mouseYNormalized > 0.9f && !refreshInitiated)
+            if (contentRect.anchoredPosition.y < 1063f && contentRect.anchoredPosition.y > 900f && !refreshInitiated)
             {
                 refreshInitiated = true;
                 mousePrevPos = Input.mousePosition;
@@ -73,15 +77,15 @@ public class Manager : MonoBehaviour
             else if (refreshInitiated)
             {
                 Vector2 deltaPos = Input.mousePosition - mousePrevPos;
-                refreshUIRect.anchoredPosition = new Vector2(refreshUIRect.anchoredPosition.x, refreshUIRect.anchoredPosition.y + deltaPos.y);
+                refreshUIRect.anchoredPosition = new Vector2(refreshUIRect.anchoredPosition.x, refreshUIRect.anchoredPosition.y + deltaPos.y * 0.5f);
                 mousePrevPos = Input.mousePosition;
 
-                refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, (GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f);
-                refreshUIArrowImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, (GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f);
+                refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f);
+                refreshUIArrowImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f);
 
-                refreshUIArrowRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, ((GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f)) * 180f);
+                refreshUIArrowRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, (1f - ((GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f))) * -180f);
 
-                if (refreshUIRect.anchoredPosition.y <= -200f)
+                if (contentRect.anchoredPosition.y <= 700f)
                     StartRefresh();
             }
 
@@ -92,6 +96,7 @@ public class Manager : MonoBehaviour
             refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 0f);
             refreshInitiated = false;
             refreshUI.SetActive(false);
+
         }
 
     }
@@ -99,13 +104,24 @@ public class Manager : MonoBehaviour
     public void StartRefresh()
     {
         isLoaded = false;
+        retryPanel.SetActive(false);
         refreshUIRect.anchoredPosition = refreshStartPos;
         refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 0f);
         refreshInitiated = false;
         refreshUI.SetActive(false);
+        //scrollRoot.GetComponent<ScrollRect>().vertical = false;
+        scrollRoot.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
         foreach (Transform child in contentRect.transform)
         {
+            //child.GetComponent<Button>().interactable = false;
+            child.GetComponent<ItemFunctions>().enabled = false;
+            ColorBlock block = child.GetComponent<Button>().colors;
+            block.selectedColor = Color.white;
+            block.highlightedColor = Color.white;
+            child.GetComponent<Button>().colors = block;
+            child.GetComponent<Animator>().runtimeAnimatorController = animControllerLoading;
+            child.GetComponent<Animator>().Play("Loading");
             child.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
             child.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
             child.GetChild(1).GetChild(0).gameObject.SetActive(true);
@@ -114,8 +130,9 @@ public class Manager : MonoBehaviour
             child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
             child.GetChild(3).gameObject.SetActive(false);
             child.GetChild(4).gameObject.SetActive(false);
+            child.GetComponent<RectTransform>().anchoredPosition = new Vector2(540f, child.GetComponent<RectTransform>().anchoredPosition.y);
 
-            child.GetComponent<Animator>().SetBool("isRefreshing", true);
+            //child.GetComponent<Animator>().SetBool("isRefreshing", true);
         }
 
         UpdateDataUI();
@@ -149,7 +166,7 @@ public class Manager : MonoBehaviour
         rect.anchoredPosition = new Vector2(520f, -100f - (go.transform.GetSiblingIndex() * 220f));
         rect.sizeDelta = new Vector2(1040f, 200f);
 
-        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 226f);
+        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 220f);
     }
 
     //public void LoadImages(RepositoryData[] repositoryDatas)
@@ -162,27 +179,34 @@ public class Manager : MonoBehaviour
 
     public async void UpdateDataUI()
     {
-        Task<List<RepositoryData>> task = new Task<List<RepositoryData>>(GetRepoData);
-        task.Start();
-
-        Debug.Log("Loading data");
-        repoDataList = await task;
-        Debug.Log("Data Loaded");
-
-        foreach (Transform child in contentRect.transform)
+        try
         {
-            Destroy(child.gameObject);
+            Task<List<RepositoryData>> task = new Task<List<RepositoryData>>(GetRepoData);
+            task.Start();
+
+            Debug.Log("Loading data");
+            repoDataList = await task;
+            Debug.Log("Data Loaded");
+
+            foreach (Transform child in contentRect.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 0f);
+            //scrollRoot.GetComponent<ScrollRect>().vertical = true;
+
+            StartCoroutine(AddRepoItemsAfterDelay());
+
+
         }
-        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 0f);
-        scrollRoot.GetComponent<ScrollRect>().vertical = true;
+        catch
+        {
+            DisplayErrorPanel();
 
-        StartCoroutine(AddRepoItemAfterDelay());
-
-
-
+        }
     }
 
-    IEnumerator AddRepoItemAfterDelay()
+    IEnumerator AddRepoItemsAfterDelay()
     {
         yield return new WaitForSeconds(0f);
         foreach (RepositoryData data in repoDataList)
@@ -191,6 +215,8 @@ public class Manager : MonoBehaviour
         }
 
         isLoaded = true;
+        scrollRoot.GetComponent<ScrollRect>().vertical = true;
+        scrollRoot.GetComponent<CanvasGroup>().blocksRaycasts = true;
     }
 
     //public Texture2D GetRemoteTexture(string url)
