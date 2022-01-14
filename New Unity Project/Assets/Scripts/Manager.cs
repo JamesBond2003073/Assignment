@@ -57,6 +57,10 @@ public class Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+#if !UNITY_EDITOR
+        Debug.unityLogger.logEnabled = false;
+#endif
+
         //Initialize important fields
 
         DeviceChange.OnOrientationChange += HandleOrientationChange;
@@ -147,14 +151,14 @@ public class Manager : MonoBehaviour
         {
             case ScreenOrientation.LandscapeLeft:
             case ScreenOrientation.LandscapeRight:
-                contentRect.sizeDelta += new Vector2(0f, 25f * contentRect.transform.childCount);
-                starredContentRect.sizeDelta += new Vector2(0f, 25f * starredContentRect.transform.childCount);
+                contentRect.sizeDelta += new Vector2(0f, 35f * contentRect.transform.childCount);
+                starredContentRect.sizeDelta += new Vector2(0f, 35f * starredContentRect.transform.childCount);
                 break;
 
             case ScreenOrientation.Portrait:
             case ScreenOrientation.PortraitUpsideDown:
-                contentRect.sizeDelta -= new Vector2(0f, 25f * contentRect.transform.childCount);
-                starredContentRect.sizeDelta -= new Vector2(0f, 25f * starredContentRect.transform.childCount);
+                contentRect.sizeDelta -= new Vector2(0f, 35f * contentRect.transform.childCount);
+                starredContentRect.sizeDelta -= new Vector2(0f, 35f * starredContentRect.transform.childCount);
                 break;
 
         }
@@ -392,7 +396,7 @@ public class Manager : MonoBehaviour
         string json = File.ReadAllText(Application.persistentDataPath + "/saveData.txt");
         repoDataList = JsonConvert.DeserializeObject<List<RepositoryData>>(json);
 
-        repoByLanguage.Add("Unknown", new List<RepositoryData>());
+        repoByLanguage.Add("Unknown Language", new List<RepositoryData>());
 
         //initialize UI 
 
@@ -426,7 +430,7 @@ public class Manager : MonoBehaviour
             string json = JsonConvert.SerializeObject(repoDataList);
             File.WriteAllText(Application.persistentDataPath + "/saveData.txt", json);
 
-            repoByLanguage.Add("Unknown", new List<RepositoryData>());
+            repoByLanguage.Add("Unknown Language", new List<RepositoryData>());
 
             //initializing UI after receiving data
 
@@ -468,7 +472,7 @@ public class Manager : MonoBehaviour
         ColorUtility.TryParseHtmlString(languageColor, out color);
         go.GetComponent<Image>().color = color;
 
-        if (language == "Unknown")
+        if (language == "Unknown Language")
             go.GetComponent<Image>().color = Color.gray;
 
         RectTransform rect = go.GetComponent<RectTransform>();
@@ -496,7 +500,7 @@ public class Manager : MonoBehaviour
                 else
                     repoByLanguage.Add(data.language, new List<RepositoryData> { data });
             else
-                repoByLanguage["Unknown"].Add(data);
+                repoByLanguage["Unknown Language"].Add(data);
 
         }
 
@@ -515,8 +519,8 @@ public class Manager : MonoBehaviour
         if (Screen.orientation == ScreenOrientation.LandscapeLeft || Screen.orientation == ScreenOrientation.LandscapeRight)
         {
             Debug.Log("Landscape Detected");
-            contentRect.sizeDelta += new Vector2(0f, 25f * contentRect.transform.childCount);
-            starredContentRect.sizeDelta += new Vector2(0f, 25f * starredContentRect.transform.childCount);
+            contentRect.sizeDelta += new Vector2(0f, 35f * contentRect.transform.childCount);
+            starredContentRect.sizeDelta += new Vector2(0f, 35f * starredContentRect.transform.childCount);
         }
 
         foreach (Transform child in starredContentRect)
