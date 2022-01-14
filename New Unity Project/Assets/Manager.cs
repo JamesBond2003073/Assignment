@@ -8,9 +8,11 @@ using Newtonsoft.Json;
 using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System;
 
 public class Manager : MonoBehaviour
 {
+    public Canvas canvas;
     public GameObject repoPrefab;
     public GameObject scrollRoot;
     public GameObject retryPanel;
@@ -19,9 +21,13 @@ public class Manager : MonoBehaviour
     private RectTransform contentRect;
     private byte[] texArray;
 
+    List<RepositoryData> repoDataList;
+
     // Start is called before the first frame update
     void Start()
     {
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        canvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(Screen.currentResolution.height, Screen.currentResolution.width);
 
         contentRect = scrollRoot.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
         UpdateDataUI();
@@ -48,6 +54,8 @@ public class Manager : MonoBehaviour
         //icon.LoadImage(texArray);
         go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
         go.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
+        go.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
+        go.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
@@ -71,14 +79,29 @@ public class Manager : MonoBehaviour
         task.Start();
 
         Debug.Log("Loading data");
-        List<RepositoryData> repoDataList = await task;
+        repoDataList = await task;
         Debug.Log("Data Loaded");
 
+        foreach (Transform child in contentRect.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 0f);
+        scrollRoot.GetComponent<ScrollRect>().vertical = true;
+
+        StartCoroutine(AddRepoItemAfterDelay());
+
+
+
+    }
+
+    IEnumerator AddRepoItemAfterDelay()
+    {
+        yield return new WaitForSeconds(0f);
         foreach (RepositoryData data in repoDataList)
         {
             AddRepoItem(data);
         }
-
     }
 
     public Texture2D GetRemoteTexture(string url)

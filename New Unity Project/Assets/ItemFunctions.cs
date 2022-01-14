@@ -7,6 +7,8 @@ public class ItemFunctions : MonoBehaviour
     public Transform content;
     public RectTransform contentRect;
 
+    public Animator anim;
+
     public bool isExpanded = false;
     public RectTransform rect;
     public RectTransform imageRootRect;
@@ -24,6 +26,7 @@ public class ItemFunctions : MonoBehaviour
     public float targetRectHeight;
     private float targetImageRootRectHeight;
     private float targetRepoNameTop;
+    private bool defSet = false;
 
     // Start is called before the first frame update
     void Start()
@@ -35,20 +38,35 @@ public class ItemFunctions : MonoBehaviour
         userNameRect = this.transform.GetChild(1).GetComponent<RectTransform>();
         repoNameRect = this.transform.GetChild(2).GetComponent<RectTransform>();
 
-        targetRectY = rect.sizeDelta.y;
-        targetRectHeight = rect.anchoredPosition.y;
-        targetImageRootRectHeight = imageRootRect.anchoredPosition.y;
-        targetRepoNameTop = repoNameRect.offsetMax.y;
+        anim = this.GetComponent<Animator>();
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        LerpToPos();
+        if (!(anim.GetCurrentAnimatorStateInfo(0).length > anim.GetCurrentAnimatorStateInfo(0).normalizedTime))
+        {
+            if (!defSet)
+            {
+                defSet = true;
+
+                targetRectY = rect.sizeDelta.y;
+                targetRectHeight = rect.anchoredPosition.y;
+                targetImageRootRectHeight = imageRootRect.anchoredPosition.y;
+                targetRepoNameTop = repoNameRect.offsetMax.y;
+            }
+
+            LerpToPos();
+        }
     }
 
     public void OnClickExpandToggle()
     {
+        if ((anim.GetCurrentAnimatorStateInfo(0).length > anim.GetCurrentAnimatorStateInfo(0).normalizedTime))
+            return;
+
         if (!isExpanded)
         {
             targetRectY = 400f;

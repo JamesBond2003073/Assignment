@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 0ea2e19c7ba244eb3902192b2f4427cb
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: MineCrafter 3
+  fontNames:
+  - MineCrafter 3
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 6c21d5d31e5d42a4d901a58b6d3a5b79, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
