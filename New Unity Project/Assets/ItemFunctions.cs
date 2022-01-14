@@ -22,8 +22,9 @@ public class ItemFunctions : MonoBehaviour
     public Vector2 refVel6 = Vector2.zero;
     private float smoothTime = 3f;
 
-    public float targetRectY;
-    public float targetRectHeight;
+    private float minRectHeight;
+    private float targetRectY;
+    private float targetRectHeight;
     private float targetImageRootRectHeight;
     private float targetRepoNameTop;
     private bool defSet = false;
@@ -69,12 +70,16 @@ public class ItemFunctions : MonoBehaviour
 
         if (!isExpanded)
         {
+            minRectHeight = rect.anchoredPosition.y;
             targetRectY = 400f;
             targetRectHeight -= 120f;
             targetImageRootRectHeight += 100f;
             targetRepoNameTop += 200f;
 
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 226f);
+
+            this.transform.GetChild(3).gameObject.SetActive(true);
+            this.transform.GetChild(4).gameObject.SetActive(true);
 
             foreach (Transform child in content)
             {
@@ -86,12 +91,16 @@ public class ItemFunctions : MonoBehaviour
         }
         else
         {
+            minRectHeight = rect.anchoredPosition.y;
             targetRectY = 200f;
             targetRectHeight += 120f;
             targetImageRootRectHeight -= 100f;
             targetRepoNameTop -= 200f;
 
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y - 226f);
+
+            this.transform.GetChild(3).gameObject.SetActive(false);
+            this.transform.GetChild(4).gameObject.SetActive(false);
 
             foreach (Transform child in content)
             {
@@ -110,7 +119,7 @@ public class ItemFunctions : MonoBehaviour
         rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
         rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, new Vector2(rect.anchoredPosition.x, targetRectHeight), ref refVel2, smoothTime * Time.deltaTime);
         imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
-        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, targetRepoNameTop);
+        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Manager.GetPercent(rect.anchoredPosition.y, minRectHeight, targetRectHeight) * (targetRepoNameTop / 100));
     }
 
     public void ShiftDown(int siblingIndex)

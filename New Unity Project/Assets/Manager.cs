@@ -16,16 +16,31 @@ public class Manager : MonoBehaviour
     public GameObject repoPrefab;
     public GameObject scrollRoot;
     public GameObject retryPanel;
+    public GameObject refreshUI;
+    public RectTransform refreshUIRect;
+    private Image refreshUIImage;
+    public RectTransform refreshUIArrowRect;
+    public Image refreshUIArrowImage;
 
     //private fields
     private RectTransform contentRect;
     private byte[] texArray;
+    private bool isLoaded = false;
 
     List<RepositoryData> repoDataList;
+    private bool refreshInitiated = false;
+    private Vector3 mousePrevPos;
+    private Vector2 refreshStartPos;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        refreshUIRect = refreshUI.GetComponent<RectTransform>();
+        refreshUIImage = refreshUI.GetComponent<Image>();
+        refreshUIRect = refreshUI.transform.GetChild(0).GetComponent<RectTransform>();
+        refreshUIImage = refreshUI.transform.GetChild(0).GetComponent<Image>();
+        refreshStartPos = refreshUIRect.anchoredPosition;
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         canvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(Screen.currentResolution.height, Screen.currentResolution.width);
 
@@ -36,6 +51,74 @@ public class Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        HandleRefresh();
+    }
+
+    public void HandleRefresh()
+    {
+        if (!isLoaded)
+            return;
+
+        if (Input.GetMouseButton(0))
+        {
+            float mouseXNormalized = Input.mousePosition.x / Screen.width;
+            float mouseYNormalized = Input.mousePosition.y / Screen.height;
+
+            if (mouseXNormalized > 0.4f && mouseXNormalized < 0.6f && mouseYNormalized > 0.9f && !refreshInitiated)
+            {
+                refreshInitiated = true;
+                mousePrevPos = Input.mousePosition;
+                refreshUI.SetActive(true);
+            }
+            else if (refreshInitiated)
+            {
+                Vector2 deltaPos = Input.mousePosition - mousePrevPos;
+                refreshUIRect.anchoredPosition = new Vector2(refreshUIRect.anchoredPosition.x, refreshUIRect.anchoredPosition.y + deltaPos.y);
+                mousePrevPos = Input.mousePosition;
+
+                refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, (GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f);
+                refreshUIArrowImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, (GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f);
+
+                refreshUIArrowRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, ((GetPercent(-refreshUIRect.anchoredPosition.y, 35f, 200f)) / 100f)) * 180f);
+
+                if (refreshUIRect.anchoredPosition.y <= -200f)
+                    StartRefresh();
+            }
+
+        }
+        else
+        {
+            refreshUIRect.anchoredPosition = refreshStartPos;
+            refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 0f);
+            refreshInitiated = false;
+            refreshUI.SetActive(false);
+        }
+
+    }
+
+    public void StartRefresh()
+    {
+        isLoaded = false;
+        refreshUIRect.anchoredPosition = refreshStartPos;
+        refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 0f);
+        refreshInitiated = false;
+        refreshUI.SetActive(false);
+
+        foreach (Transform child in contentRect.transform)
+        {
+            child.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
+            child.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+            child.GetChild(1).GetChild(0).gameObject.SetActive(true);
+            child.GetChild(2).GetChild(0).gameObject.SetActive(true);
+            child.GetChild(0).GetChild(0).GetComponent<Image>().sprite = default;
+            child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
+            child.GetChild(3).gameObject.SetActive(false);
+            child.GetChild(4).gameObject.SetActive(false);
+
+            child.GetComponent<Animator>().SetBool("isRefreshing", true);
+        }
+
+        UpdateDataUI();
 
     }
 
@@ -44,7 +127,7 @@ public class Manager : MonoBehaviour
         retryPanel.SetActive(true);
     }
 
-    public async void AddRepoItem(RepositoryData repData)
+    public void AddRepoItem(RepositoryData repData)
     {
         GameObject go = GameObject.Instantiate(repoPrefab, contentRect.transform);
         //StartCoroutine(this.GetTextureRequest(repData.builtBy[0].url));
@@ -54,6 +137,10 @@ public class Manager : MonoBehaviour
         //icon.LoadImage(texArray);
         go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
         go.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
+        go.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.description;
+        go.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.language;
+        go.transform.GetChild(4).GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.totalStars;
+        go.transform.GetChild(4).GetChild(5).GetComponent<TextMeshProUGUI>().text = repData.forks;
         go.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
         go.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
         RectTransform rect = go.GetComponent<RectTransform>();
@@ -65,13 +152,13 @@ public class Manager : MonoBehaviour
         contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 226f);
     }
 
-    public void LoadImages(RepositoryData[] repositoryDatas)
-    {
-        foreach (RepositoryData data in repositoryDatas)
-        {
-            Texture2D tex = GetRemoteTexture(data.builtBy[0].url);
-        }
-    }
+    //public void LoadImages(RepositoryData[] repositoryDatas)
+    //{
+    //    foreach (RepositoryData data in repositoryDatas)
+    //    {
+    //        Texture2D tex = GetRemoteTexture(data.builtBy[0].url);
+    //    }
+    //}
 
     public async void UpdateDataUI()
     {
@@ -102,34 +189,36 @@ public class Manager : MonoBehaviour
         {
             AddRepoItem(data);
         }
+
+        isLoaded = true;
     }
 
-    public Texture2D GetRemoteTexture(string url)
-    {
-        Texture2D textureOnline = new Texture2D(128, 128);
-        using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(url))
-        {
-            www.SendWebRequest();
+    //public Texture2D GetRemoteTexture(string url)
+    //{
+    //    Texture2D textureOnline = new Texture2D(128, 128);
+    //    using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(url))
+    //    {
+    //        www.SendWebRequest();
 
-            if (www.isNetworkError || www.isHttpError)
-            {
-                print(www.error);
-                print("error while parsing url" + www.error);
-            }
+    //        if (www.isNetworkError || www.isHttpError)
+    //        {
+    //            print(www.error);
+    //            print("error while parsing url" + www.error);
+    //        }
 
-            else
-            {
-                if (www.isDone)
-                {
-                    textureOnline = DownloadHandlerTexture.GetContent(www);
-                    print("getTexture done");
-                    //textureOnline.filterMode = FilterMode.Point;
-                    //texArray = textureOnline.EncodeToPNG();
-                }
-            }
-        }
-        return textureOnline;
-    }
+    //        else
+    //        {
+    //            if (www.isDone)
+    //            {
+    //                textureOnline = DownloadHandlerTexture.GetContent(www);
+    //                print("getTexture done");
+    //                //textureOnline.filterMode = FilterMode.Point;
+    //                //texArray = textureOnline.EncodeToPNG();
+    //            }
+    //        }
+    //    }
+    //    return textureOnline;
+    //}
 
     IEnumerator GetText(string url, int siblingIndex)
     {
@@ -161,6 +250,11 @@ public class Manager : MonoBehaviour
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string json = reader.ReadToEnd();
         return JsonConvert.DeserializeObject<List<RepositoryData>>(json);
+    }
+
+    public static float GetPercent(float input, float min, float max)
+    {
+        return ((input - min) * 100) / (max - min);
     }
 
 }
