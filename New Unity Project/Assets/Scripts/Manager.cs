@@ -59,7 +59,7 @@ public class Manager : MonoBehaviour
     {
         //Initialize important fields
 
-        //DeviceChange.OnOrientationChange += HandleOrientationChange;
+        DeviceChange.OnOrientationChange += HandleOrientationChange;
 
         optionsAnim = optionsMenuRoot.GetComponent<Animator>();
         refreshUIRect = refreshUI.GetComponent<RectTransform>();
@@ -147,14 +147,14 @@ public class Manager : MonoBehaviour
         {
             case ScreenOrientation.LandscapeLeft:
             case ScreenOrientation.LandscapeRight:
-                contentRect.sizeDelta += new Vector2(0f, 50 * contentRect.transform.childCount);
-                starredContentRect.sizeDelta += new Vector2(0f, 50 * starredContentRect.transform.childCount);
+                contentRect.sizeDelta += new Vector2(0f, 25f * contentRect.transform.childCount);
+                starredContentRect.sizeDelta += new Vector2(0f, 25f * starredContentRect.transform.childCount);
                 break;
 
             case ScreenOrientation.Portrait:
             case ScreenOrientation.PortraitUpsideDown:
-                contentRect.sizeDelta -= new Vector2(0f, 50 * contentRect.transform.childCount);
-                starredContentRect.sizeDelta -= new Vector2(0f, 50 * starredContentRect.transform.childCount);
+                contentRect.sizeDelta -= new Vector2(0f, 25f * contentRect.transform.childCount);
+                starredContentRect.sizeDelta -= new Vector2(0f, 25f * starredContentRect.transform.childCount);
                 break;
 
         }
@@ -378,7 +378,36 @@ public class Manager : MonoBehaviour
 
     }
 
-    ////Fetch data and initialize UI
+    public void ExitBtn()
+    {
+
+        Application.Quit();
+    }
+
+    //Load data and initialize UI offline
+    public void UpdateDataUIOffline()
+    {
+        retryPanel.SetActive(false);
+
+        string json = File.ReadAllText(Application.persistentDataPath + "/saveData.txt");
+        repoDataList = JsonConvert.DeserializeObject<List<RepositoryData>>(json);
+
+        repoByLanguage.Add("Unknown", new List<RepositoryData>());
+
+        //initialize UI 
+
+        //destroy existing items
+        foreach (Transform child in contentRect.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 0f);
+
+        StartCoroutine(AddRepoItemsAfterDelay());
+    }
+
+    //Fetch data and initialize UI
     public async void UpdateDataUI()
     {
         try
@@ -393,23 +422,33 @@ public class Manager : MonoBehaviour
             repoDataList = await task;
             Debug.Log("Data Loaded");
 
+            //Save data locally to use later for offline mode
+            string json = JsonConvert.SerializeObject(repoDataList);
+            File.WriteAllText(Application.persistentDataPath + "/saveData.txt", json);
 
             repoByLanguage.Add("Unknown", new List<RepositoryData>());
 
             //initializing UI after receiving data
 
+            //destroy existing items
             foreach (Transform child in contentRect.transform)
             {
                 Destroy(child.gameObject);
             }
+
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 0f);
 
             StartCoroutine(AddRepoItemsAfterDelay());
 
 
         }
-        catch
+        catch (Exception ex)
         {
+            Debug.Log(ex.Message);
+            refreshUIRect.anchoredPosition = refreshStartPos;
+            refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 0f);
+            refreshUI.SetActive(false);
+            isRefreshOngoing = false;
             DisplayErrorPanel();
 
         }
@@ -476,8 +515,8 @@ public class Manager : MonoBehaviour
         if (Screen.orientation == ScreenOrientation.LandscapeLeft || Screen.orientation == ScreenOrientation.LandscapeRight)
         {
             Debug.Log("Landscape Detected");
-            //contentRect.sizeDelta += new Vector2(0f, 50 * contentRect.transform.childCount);
-            //starredContentRect.sizeDelta += new Vector2(0f, 50 * starredContentRect.transform.childCount);
+            contentRect.sizeDelta += new Vector2(0f, 25f * contentRect.transform.childCount);
+            starredContentRect.sizeDelta += new Vector2(0f, 25f * starredContentRect.transform.childCount);
         }
 
         foreach (Transform child in starredContentRect)
