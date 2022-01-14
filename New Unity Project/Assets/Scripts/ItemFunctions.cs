@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Totality.GameTemplate;
 
 public class ItemFunctions : MonoBehaviour
 {
-    public Manager manager;
 
     public Transform content;
     public RectTransform contentRect;
@@ -34,10 +34,14 @@ public class ItemFunctions : MonoBehaviour
     public bool isStarred = false;
     public GameObject starredItem;
 
+    public RepositoryDataEvent addStarItemEvent;
+    public GameObjectEvent removeStarItemEvent;
+    public IntEvent shiftDownEvent;
+    public IntEvent shiftUpEvent;
+
     // Start is called before the first frame update
     void Start()
     {
-        manager = GameObject.Find("Manager").GetComponent<Manager>();
 
         content = transform.parent;
         contentRect = content.GetComponent<RectTransform>();
@@ -58,20 +62,24 @@ public class ItemFunctions : MonoBehaviour
 
     }
 
+    //Method to add repository item to starred list that can be accessed in a separate screen
     public void StarItem()
     {
         if (!isStarred)
         {
             this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(true);
-            manager.AddRepoItem(repoData, true);
+
+            //raise addStarItemEvent to add item to starred list
+            addStarItemEvent.Raise(repoData);
             isStarred = true;
-            starredItem = manager.starredItems[manager.starredItems.Count - 1];
+            starredItem = Util.starredItems[Util.starredItems.Count - 1];
         }
         else
         {
             this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(false);
-            //Debug.Log("Sibling remove- " + starredListIndex);
-            manager.RemoveRepoItem(starredItem);
+
+            ////raise removeStarItemEvent to remove item from starred list
+            removeStarItemEvent.Raise(starredItem);
             isStarred = false;
         }
     }
@@ -79,6 +87,7 @@ public class ItemFunctions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Initialize default values for position targets
         if (!(anim.GetCurrentAnimatorStateInfo(0).length > anim.GetCurrentAnimatorStateInfo(0).normalizedTime))
         {
             if (!defSet)
@@ -96,10 +105,12 @@ public class ItemFunctions : MonoBehaviour
                 targetStarY = starRect.anchoredPosition.y;
             }
 
+            //Control position of item every frame
             LerpToPos();
         }
     }
 
+    //Manage expand and collapse for item 
     public void OnClickExpandToggle()
     {
         if ((anim.GetCurrentAnimatorStateInfo(0).length > anim.GetCurrentAnimatorStateInfo(0).normalizedTime))
@@ -119,13 +130,8 @@ public class ItemFunctions : MonoBehaviour
             this.transform.GetChild(3).gameObject.SetActive(true);
             this.transform.GetChild(4).gameObject.SetActive(true);
 
-            foreach (Transform child in content)
-            {
-                if (child.GetSiblingIndex() > transform.GetSiblingIndex())
-                {
-                    child.GetComponent<ItemFunctions>().targetRectHeight -= 220f;
-                }
-            }
+            //Raise shiftDown event to adjust position of other items below the target
+            shiftDownEvent.Raise(transform.GetSiblingIndex());
         }
         else
         {
@@ -141,18 +147,14 @@ public class ItemFunctions : MonoBehaviour
             this.transform.GetChild(3).gameObject.SetActive(false);
             this.transform.GetChild(4).gameObject.SetActive(false);
 
-            foreach (Transform child in content)
-            {
-                if (child.GetSiblingIndex() > transform.GetSiblingIndex())
-                {
-                    child.GetComponent<ItemFunctions>().targetRectHeight += 220f;
-                }
-            }
+            //Raise shiftUp event to adjust position of other items below the target
+            shiftUpEvent.Raise(transform.GetSiblingIndex());
         }
 
         isExpanded = !isExpanded;
     }
 
+    //Control position of item every frame
     public void LerpToPos()
     {
         rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, new Vector2(rect.anchoredPosition.x, targetRectHeight), ref refVel2, smoothTime * Time.deltaTime);
@@ -160,16 +162,23 @@ public class ItemFunctions : MonoBehaviour
             return;
         rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
         imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
-        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
-        starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));
+        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
+        starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));
     }
 
+    //Method subscribed to shiftDownEvent
     public void ShiftDown(int siblingIndex)
     {
-        if (siblingIndex > this.transform.GetSiblingIndex())
-            return;
+        if (siblingIndex < this.transform.GetSiblingIndex())
+            targetRectHeight -= 220f;
 
+    }
 
+    //Method subscribed to shiftUpEvent
+    public void ShiftUp(int siblingIndex)
+    {
+        if (siblingIndex < this.transform.GetSiblingIndex())
+            targetRectHeight += 220f;
     }
 
 

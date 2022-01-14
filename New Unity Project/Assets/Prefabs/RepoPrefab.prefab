@@ -1561,6 +1561,8 @@ GameObject:
   - component: {fileID: 4217854245569989130}
   - component: {fileID: 4161459644777123150}
   - component: {fileID: 1239130630}
+  - component: {fileID: 2207587145913001489}
+  - component: {fileID: -6736771288764610246}
   m_Layer: 5
   m_Name: RepoPrefab
   m_TagString: Untagged
@@ -1696,7 +1698,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -1724,6 +1725,11 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 11400000, guid: e4b38549f8c2b144f8ec55e64fa736fe, type: 2}
+  removeStarItemEvent: {fileID: 11400000, guid: 9ad16ee6b468aa34a97438ceceba85be,
+    type: 2}
+  shiftDownEvent: {fileID: 11400000, guid: 1bd6282c92eff6a49bc886ea083a4ff2, type: 2}
+  shiftUpEvent: {fileID: 11400000, guid: 7a2b6b37411e35b428b20ec19c7c589a, type: 2}
 --- !u!95 &1239130630
 Animator:
   serializedVersion: 3
@@ -1743,6 +1749,60 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2207587145913001489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4217854245569989124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52666be609a0ac74ca4aa00c6c29e221, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 1bd6282c92eff6a49bc886ea083a4ff2, type: 2}
+  unityEventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4161459644777123150}
+        m_MethodName: ShiftDown
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &-6736771288764610246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4217854245569989124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52666be609a0ac74ca4aa00c6c29e221, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 7a2b6b37411e35b428b20ec19c7c589a, type: 2}
+  unityEventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4161459644777123150}
+        m_MethodName: ShiftUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5938872828194269450
 GameObject:
   m_ObjectHideFlags: 0

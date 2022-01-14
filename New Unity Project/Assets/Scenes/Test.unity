@@ -757,7 +757,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -785,6 +784,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &92113751
 Animator:
   serializedVersion: 3
@@ -1799,7 +1802,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -1827,6 +1829,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &201881814
 Animator:
   serializedVersion: 3
@@ -2431,8 +2437,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 23.999943, y: 32.000122}
-  m_SizeDelta: {x: 500, y: 80}
+  m_AnchoredPosition: {x: 3.5, y: 55}
+  m_SizeDelta: {x: 794.62964, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &260321197
 MonoBehaviour:
@@ -2501,13 +2507,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3f6771b8bd8239346a5a3433a849c52f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3e4095700c83c7a448833debc0ac8f61, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6016,8 +6022,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1, y: 0}
-  m_SizeDelta: {x: 184.14459, y: 0}
+  m_AnchoredPosition: {x: 136.99997, y: 0}
+  m_SizeDelta: {x: 235.17865, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &615498173
 MonoBehaviour:
@@ -6067,8 +6073,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 82
+  m_fontSizeBase: 82
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7092,8 +7098,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 24, y: -35}
-  m_SizeDelta: {x: 500, y: 80}
+  m_AnchoredPosition: {x: 3.5, y: -38}
+  m_SizeDelta: {x: 794.62964, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &764728837
 MonoBehaviour:
@@ -7151,13 +7157,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3f6771b8bd8239346a5a3433a849c52f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3e4095700c83c7a448833debc0ac8f61, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7574,7 +7580,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -7602,6 +7607,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &870177373
 Animator:
   serializedVersion: 3
@@ -8316,7 +8325,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -8344,6 +8352,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &890686981
 Animator:
   serializedVersion: 3
@@ -8512,7 +8524,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -8540,6 +8551,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &893181082
 Animator:
   serializedVersion: 3
@@ -8796,7 +8811,7 @@ MonoBehaviour:
   m_Elasticity: 0.07
   m_Inertia: 1
   m_DecelerationRate: 0.1
-  m_ScrollSensitivity: 30
+  m_ScrollSensitivity: 50
   m_Viewport: {fileID: 1370852762}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -9232,8 +9247,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1, y: 0}
-  m_SizeDelta: {x: 184.14459, y: 0}
+  m_AnchoredPosition: {x: 137, y: 0}
+  m_SizeDelta: {x: 235.17865, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927866471
 MonoBehaviour:
@@ -9281,8 +9296,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 82
+  m_fontSizeBase: 82
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -10063,7 +10078,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -10091,6 +10105,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &1005179708
 Animator:
   serializedVersion: 3
@@ -10673,7 +10691,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -10701,6 +10718,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &1066730831
 Animator:
   serializedVersion: 3
@@ -10822,6 +10843,8 @@ GameObject:
   - component: {fileID: 1145705168}
   - component: {fileID: 1145705167}
   - component: {fileID: 1145705169}
+  - component: {fileID: 1145705171}
+  - component: {fileID: 1145705170}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -10858,7 +10881,8 @@ MonoBehaviour:
   optionsBtnRect: {fileID: 1722579429}
   headerText: {fileID: 476528107}
   backButton: {fileID: 2105304598}
-  starredItems: []
+  itemCount: 0
+  headerCount: 0
   animControllerLoading: {fileID: 9100000, guid: 7f4b05611fcd1d044a104af68cf9dc73,
     type: 2}
 --- !u!4 &1145705168
@@ -10887,6 +10911,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a08fd78619567f4786daa8325ef185c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1145705170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145705166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a8341f578ee274187b7e042b3014cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: 9ad16ee6b468aa34a97438ceceba85be, type: 2}
+  unityEventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1145705167}
+        m_MethodName: RemoveStarItem
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1145705171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145705166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 258e6afa70cbcb047bf22d84e17ebd1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameEvent: {fileID: 11400000, guid: e4b38549f8c2b144f8ec55e64fa736fe, type: 2}
+  unityEventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1145705167}
+        m_MethodName: AddStarItem
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1148946607
 GameObject:
   m_ObjectHideFlags: 0
@@ -14644,7 +14722,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -14672,6 +14749,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &1565330258
 Animator:
   serializedVersion: 3
@@ -15987,7 +16068,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1063.2662}
-  m_SizeDelta: {x: 1040, y: 2180}
+  m_SizeDelta: {x: 1040, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1678690714
 MonoBehaviour:
@@ -18233,8 +18314,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -297, y: -149}
-  m_SizeDelta: {x: 509.96997, y: 188.9389}
+  m_AnchoredPosition: {x: -325.7, y: -200.3}
+  m_SizeDelta: {x: 567.4203, y: 291.69025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1908755750
 MonoBehaviour:
@@ -19848,7 +19929,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -19876,6 +19956,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &2021622248
 Animator:
   serializedVersion: 3
@@ -20118,7 +20202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb02fe7a7bba4944cbd9166d36ecce0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
   content: {fileID: 0}
   contentRect: {fileID: 0}
   anim: {fileID: 0}
@@ -20146,6 +20229,10 @@ MonoBehaviour:
   targetRectHeight: 0
   isStarred: 0
   starredItem: {fileID: 0}
+  addStarItemEvent: {fileID: 0}
+  removeStarItemEvent: {fileID: 0}
+  shiftDownEvent: {fileID: 0}
+  shiftUpEvent: {fileID: 0}
 --- !u!95 &2043145739
 Animator:
   serializedVersion: 3
