@@ -15,17 +15,26 @@ public class Manager : MonoBehaviour
     public Canvas canvas;
     public GameObject repoPrefab;
     public GameObject scrollRoot;
+    public GameObject starredScrollRoot;
     public GameObject retryPanel;
     public GameObject refreshUI;
     public RectTransform refreshUIRect;
-    private Image refreshUIImage;
+    public Image refreshUIImage;
     public RectTransform refreshUIArrowRect;
     public Image refreshUIArrowImage;
+
+    public GameObject optionsMenuRoot;
+    public RectTransform optionsBtnRect;
+    public TextMeshProUGUI headerText;
+    public GameObject backButton;
+
+    public List<GameObject> starredItems = new List<GameObject>();
 
     public RuntimeAnimatorController animControllerLoading;
 
     //private fields
     private RectTransform contentRect;
+    private RectTransform starredContentRect;
     private byte[] texArray;
     private bool isLoaded = false;
 
@@ -33,6 +42,8 @@ public class Manager : MonoBehaviour
     private bool refreshInitiated = false;
     private Vector3 mousePrevPos;
     private Vector2 refreshStartPos;
+    private bool isOptionsActive = false;
+    private bool starredListActive = false;
 
 
     // Start is called before the first frame update
@@ -40,13 +51,14 @@ public class Manager : MonoBehaviour
     {
         refreshUIRect = refreshUI.GetComponent<RectTransform>();
         refreshUIImage = refreshUI.GetComponent<Image>();
-        refreshUIRect = refreshUI.transform.GetChild(0).GetComponent<RectTransform>();
-        refreshUIImage = refreshUI.transform.GetChild(0).GetComponent<Image>();
+        refreshUIArrowRect = refreshUI.transform.GetChild(0).GetComponent<RectTransform>();
+        refreshUIArrowImage = refreshUI.transform.GetChild(0).GetComponent<Image>();
         refreshStartPos = refreshUIRect.anchoredPosition;
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         canvas.GetComponent<CanvasScaler>().referenceResolution = new Vector2(Screen.currentResolution.height, Screen.currentResolution.width);
 
         contentRect = scrollRoot.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
+        starredContentRect = starredScrollRoot.transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
 
         UpdateDataUI();
 
@@ -56,6 +68,62 @@ public class Manager : MonoBehaviour
     void Update()
     {
         HandleRefresh();
+    }
+
+    public void BackBtn()
+    {
+        foreach (Transform child in starredContentRect.transform)
+        {
+            if (child.GetComponent<ItemFunctions>().isExpanded)
+            {
+                child.GetComponent<ItemFunctions>().OnClickExpandToggle();
+            }
+        }
+        headerText.text = "Trending";
+        starredListActive = false;
+        starredScrollRoot.SetActive(false);
+        scrollRoot.SetActive(true);
+
+        backButton.SetActive(false);
+
+
+    }
+
+    public void ViewStarredRepos()
+    {
+        if (!starredListActive)
+        {
+            headerText.text = "Starred";
+            starredListActive = true;
+            starredScrollRoot.SetActive(true);
+            scrollRoot.SetActive(false);
+
+            optionsMenuRoot.SetActive(false);
+            optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            isOptionsActive = false;
+
+            backButton.SetActive(true);
+        }
+
+    }
+
+    public void ToggleOptionsMenu()
+    {
+        if (!isLoaded)
+            return;
+
+        if (!isOptionsActive)
+        {
+            optionsMenuRoot.SetActive(true);
+            optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
+            isOptionsActive = true;
+        }
+        else
+        {
+            optionsMenuRoot.SetActive(false);
+            optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            isOptionsActive = false;
+        }
     }
 
     public void HandleRefresh()
@@ -77,15 +145,15 @@ public class Manager : MonoBehaviour
             else if (refreshInitiated)
             {
                 Vector2 deltaPos = Input.mousePosition - mousePrevPos;
-                refreshUIRect.anchoredPosition = new Vector2(refreshUIRect.anchoredPosition.x, refreshUIRect.anchoredPosition.y + deltaPos.y * 0.5f);
+                refreshUIRect.anchoredPosition = new Vector2(refreshUIRect.anchoredPosition.x, refreshUIRect.anchoredPosition.y + deltaPos.y * 0.6f);
                 mousePrevPos = Input.mousePosition;
 
-                refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f);
-                refreshUIArrowImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f);
+                refreshUIImage.color = new Color(refreshUIImage.color.r, refreshUIImage.color.g, refreshUIImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 800f, 1063f)) / 100f);
+                refreshUIArrowImage.color = new Color(refreshUIArrowImage.color.r, refreshUIArrowImage.color.g, refreshUIArrowImage.color.b, 1f - (GetPercent(contentRect.anchoredPosition.y, 800f, 1063f)) / 100f);
 
-                refreshUIArrowRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, (1f - ((GetPercent(contentRect.anchoredPosition.y, 700f, 1063f)) / 100f))) * -180f);
+                refreshUIArrowRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, (1f - ((GetPercent(contentRect.anchoredPosition.y, 800f, 1063f)) / 100f))) * -180f);
 
-                if (contentRect.anchoredPosition.y <= 700f)
+                if (contentRect.anchoredPosition.y <= 800f)
                     StartRefresh();
             }
 
@@ -130,6 +198,7 @@ public class Manager : MonoBehaviour
             child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
             child.GetChild(3).gameObject.SetActive(false);
             child.GetChild(4).gameObject.SetActive(false);
+            child.GetChild(5).gameObject.SetActive(false);
             child.GetComponent<RectTransform>().anchoredPosition = new Vector2(540f, child.GetComponent<RectTransform>().anchoredPosition.y);
 
             //child.GetComponent<Animator>().SetBool("isRefreshing", true);
@@ -144,14 +213,23 @@ public class Manager : MonoBehaviour
         retryPanel.SetActive(true);
     }
 
-    public void AddRepoItem(RepositoryData repData)
+    public void AddRepoItem(RepositoryData repData, bool isStarredItem = false)
     {
-        GameObject go = GameObject.Instantiate(repoPrefab, contentRect.transform);
+        GameObject go;
+        if (!isStarredItem)
+            go = GameObject.Instantiate(repoPrefab, contentRect.transform);
+        else
+        {
+            go = GameObject.Instantiate(repoPrefab, starredContentRect.transform);
+            go.transform.GetChild(5).gameObject.SetActive(false);
+            starredItems.Add(go);
+        }
         //StartCoroutine(this.GetTextureRequest(repData.builtBy[0].url));
         //Task<Texture2D> task = Task.Run(() => GetRemoteTexture(repData.builtBy[0].url));
         //task.Start();
-        StartCoroutine(GetText(repData.builtBy[0].avatar, go.transform.GetSiblingIndex()));
+        StartCoroutine(GetText(repData.builtBy[0].avatar, go.transform.GetSiblingIndex(), isStarredItem));
         //icon.LoadImage(texArray);
+        go.GetComponent<ItemFunctions>().repoData = repData;
         go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
         go.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
         go.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.description;
@@ -166,7 +244,27 @@ public class Manager : MonoBehaviour
         rect.anchoredPosition = new Vector2(520f, -100f - (go.transform.GetSiblingIndex() * 220f));
         rect.sizeDelta = new Vector2(1040f, 200f);
 
-        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 220f);
+        if (!isStarredItem)
+            contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 220f);
+        else
+            starredContentRect.sizeDelta = new Vector2(starredContentRect.sizeDelta.x, starredContentRect.sizeDelta.y + 220f);
+    }
+
+    public void RemoveRepoItem(GameObject item)
+    {
+        starredContentRect.sizeDelta = new Vector2(starredContentRect.sizeDelta.x, starredContentRect.sizeDelta.y - 220f);
+        starredItems.Remove(item);
+
+        foreach (Transform child in starredContentRect)
+        {
+            if (child.GetSiblingIndex() > item.transform.GetSiblingIndex())
+            {
+                child.GetComponent<ItemFunctions>().targetRectHeight += 220f;
+            }
+        }
+        Destroy(item);
+
+
     }
 
     //public void LoadImages(RepositoryData[] repositoryDatas)
@@ -246,7 +344,7 @@ public class Manager : MonoBehaviour
     //    return textureOnline;
     //}
 
-    IEnumerator GetText(string url, int siblingIndex)
+    IEnumerator GetText(string url, int siblingIndex, bool isStarredItem = false)
     {
         using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
         {
@@ -260,7 +358,11 @@ public class Manager : MonoBehaviour
             {
                 // Get downloaded asset bundle
                 var texture = DownloadHandlerTexture.GetContent(uwr);
-                GameObject go = scrollRoot.transform.GetChild(0).GetChild(0).GetChild(siblingIndex).gameObject;
+                GameObject go;
+                if (!isStarredItem)
+                    go = scrollRoot.transform.GetChild(0).GetChild(0).GetChild(siblingIndex).gameObject;
+                else
+                    go = starredScrollRoot.transform.GetChild(0).GetChild(0).GetChild(siblingIndex).gameObject;
                 Debug.Log(go.name);
                 go.transform.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.white;
                 go.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
