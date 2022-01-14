@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System;
+using UnityEngine.EventSystems;
 
 public class Manager : MonoBehaviour
 {
@@ -32,6 +33,8 @@ public class Manager : MonoBehaviour
 
     public RuntimeAnimatorController animControllerLoading;
 
+    private Animator optionsAnim;
+
     //private fields
     private RectTransform contentRect;
     private RectTransform starredContentRect;
@@ -51,6 +54,7 @@ public class Manager : MonoBehaviour
     {
         DeviceChange.OnOrientationChange += HandleOrientationChange;
 
+        optionsAnim = optionsMenuRoot.GetComponent<Animator>();
         refreshUIRect = refreshUI.GetComponent<RectTransform>();
         refreshUIImage = refreshUI.GetComponent<Image>();
         refreshUIArrowRect = refreshUI.transform.GetChild(0).GetComponent<RectTransform>();
@@ -70,6 +74,7 @@ public class Manager : MonoBehaviour
     void Update()
     {
         HandleRefresh();
+        HandleOptionsMenu();
     }
 
     public void BackBtn()
@@ -131,6 +136,34 @@ public class Manager : MonoBehaviour
         }
     }
 
+    public void HandleOptionsMenu()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            GameObject go = EventSystem.current.currentSelectedGameObject;
+
+            if (isOptionsActive)
+            {
+                if (go == null)
+                {
+                    isOptionsActive = false;
+                    optionsMenuRoot.GetComponent<Animator>().Play("fadeOut");
+                    return;
+                }
+
+                if (go.name != "OptionsMenuRoot" && go.name != "StarredRepos" && go.name != "Exit")
+                {
+                    isOptionsActive = false;
+                    optionsMenuRoot.GetComponent<Animator>().Play("fadeOut");
+                    return;
+                }
+            }
+        }
+
+        if (!(optionsAnim.GetCurrentAnimatorStateInfo(0).length > optionsAnim.GetCurrentAnimatorStateInfo(0).normalizedTime) && !isOptionsActive)
+            optionsMenuRoot.SetActive(false);
+    }
+
     public void ToggleOptionsMenu()
     {
         if (!isLoaded)
@@ -139,15 +172,10 @@ public class Manager : MonoBehaviour
         if (!isOptionsActive)
         {
             optionsMenuRoot.SetActive(true);
-            optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
+            //optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
             isOptionsActive = true;
         }
-        else
-        {
-            optionsMenuRoot.SetActive(false);
-            optionsBtnRect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
-            isOptionsActive = false;
-        }
+
     }
 
     public void HandleRefresh()
