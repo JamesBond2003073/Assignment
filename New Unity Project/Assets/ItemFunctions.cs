@@ -44,11 +44,16 @@ public class ItemFunctions : MonoBehaviour
 
         rect = this.GetComponent<RectTransform>();
         imageRootRect = this.transform.GetChild(0).GetComponent<RectTransform>();
+        anim = this.GetComponent<Animator>();
+
+        if (transform.gameObject.CompareTag("Header"))
+            return;
+
         userNameRect = this.transform.GetChild(1).GetComponent<RectTransform>();
         repoNameRect = this.transform.GetChild(2).GetComponent<RectTransform>();
         starRect = this.transform.GetChild(5).GetComponent<RectTransform>();
 
-        anim = this.GetComponent<Animator>();
+
 
 
     }
@@ -80,8 +85,12 @@ public class ItemFunctions : MonoBehaviour
             {
                 defSet = true;
 
-                targetRectY = rect.sizeDelta.y;
                 targetRectHeight = rect.anchoredPosition.y;
+
+                if (transform.gameObject.CompareTag("Header"))
+                    return;
+
+                targetRectY = rect.sizeDelta.y;
                 targetImageRootRectHeight = imageRootRect.anchoredPosition.y;
                 targetRepoNameTop = repoNameRect.offsetMax.y;
                 targetStarY = starRect.anchoredPosition.y;
@@ -146,8 +155,10 @@ public class ItemFunctions : MonoBehaviour
 
     public void LerpToPos()
     {
-        rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
         rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, new Vector2(rect.anchoredPosition.x, targetRectHeight), ref refVel2, smoothTime * Time.deltaTime);
+        if (this.gameObject.CompareTag("Header"))
+            return;
+        rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
         imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
         repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
         starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));

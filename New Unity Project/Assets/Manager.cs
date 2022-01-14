@@ -15,6 +15,7 @@ public class Manager : MonoBehaviour
 {
     public Canvas canvas;
     public GameObject repoPrefab;
+    public GameObject headerPrefab;
     public GameObject scrollRoot;
     public GameObject starredScrollRoot;
     public GameObject retryPanel;
@@ -29,7 +30,12 @@ public class Manager : MonoBehaviour
     public TextMeshProUGUI headerText;
     public GameObject backButton;
 
+    public int itemCount = 0;
+    public int headerCount = 0;
+
     public List<GameObject> starredItems = new List<GameObject>();
+
+    public Dictionary<string, List<RepositoryData>> repoByLanguage = new Dictionary<string, List<RepositoryData>>();
 
     public RuntimeAnimatorController animControllerLoading;
 
@@ -223,6 +229,10 @@ public class Manager : MonoBehaviour
 
     public void StartRefresh()
     {
+        repoByLanguage.Clear();
+        itemCount = 0;
+        headerCount = 0;
+
         isLoaded = false;
         retryPanel.SetActive(false);
         refreshUIRect.anchoredPosition = refreshStartPos;
@@ -236,23 +246,26 @@ public class Manager : MonoBehaviour
         {
             //child.GetComponent<Button>().interactable = false;
             child.GetComponent<ItemFunctions>().enabled = false;
-            ColorBlock block = child.GetComponent<Button>().colors;
-            block.selectedColor = Color.white;
-            block.highlightedColor = Color.white;
-            child.GetComponent<Button>().colors = block;
-            child.GetComponent<Animator>().runtimeAnimatorController = animControllerLoading;
-            child.GetComponent<Animator>().Play("Loading");
-            child.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
-            child.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
-            child.GetChild(1).GetChild(0).gameObject.SetActive(true);
-            child.GetChild(2).GetChild(0).gameObject.SetActive(true);
-            child.GetChild(0).GetChild(0).GetComponent<Image>().sprite = default;
-            child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
-            child.GetChild(3).gameObject.SetActive(false);
-            child.GetChild(4).gameObject.SetActive(false);
-            child.GetChild(5).gameObject.SetActive(false);
-            child.GetComponent<RectTransform>().anchoredPosition = new Vector2(540f, child.GetComponent<RectTransform>().anchoredPosition.y);
 
+            if (!child.gameObject.CompareTag("Header"))
+            {
+                ColorBlock block = child.GetComponent<Button>().colors;
+                block.selectedColor = Color.white;
+                block.highlightedColor = Color.white;
+                child.GetComponent<Button>().colors = block;
+                child.GetComponent<Animator>().runtimeAnimatorController = animControllerLoading;
+                child.GetComponent<Animator>().Play("Loading");
+                child.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
+                child.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+                child.GetChild(1).GetChild(0).gameObject.SetActive(true);
+                child.GetChild(2).GetChild(0).gameObject.SetActive(true);
+                child.GetChild(0).GetChild(0).GetComponent<Image>().sprite = default;
+                child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
+                child.GetChild(3).gameObject.SetActive(false);
+                child.GetChild(4).gameObject.SetActive(false);
+                child.GetChild(5).gameObject.SetActive(false);
+                child.GetComponent<RectTransform>().anchoredPosition = new Vector2(540f, child.GetComponent<RectTransform>().anchoredPosition.y);
+            }
             //child.GetComponent<Animator>().SetBool("isRefreshing", true);
         }
 
@@ -293,13 +306,17 @@ public class Manager : MonoBehaviour
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
-        rect.anchoredPosition = new Vector2(520f, -100f - (go.transform.GetSiblingIndex() * 220f));
+        rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 220f) - (headerCount * 180f));
         rect.sizeDelta = new Vector2(1040f, 200f);
 
         if (!isStarredItem)
+        {
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 220f);
+            itemCount++;
+        }
         else
             starredContentRect.sizeDelta = new Vector2(starredContentRect.sizeDelta.x, starredContentRect.sizeDelta.y + 220f);
+
     }
 
     public void RemoveRepoItem(GameObject item)
@@ -356,12 +373,57 @@ public class Manager : MonoBehaviour
         }
     }
 
+    public void AddHeader(string language, string languageColor)
+    {
+        GameObject go;
+
+        go = GameObject.Instantiate(headerPrefab, contentRect.transform);
+        go.tag = "Header";
+
+        go.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = language;
+        Debug.Log("Language Color- " + languageColor);
+        Color color;
+        ColorUtility.TryParseHtmlString(languageColor, out color);
+        go.GetComponent<Image>().color = color;
+
+        RectTransform rect = go.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0f, 1f);
+        rect.anchorMax = new Vector2(0f, 1f);
+        rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 220f) - (headerCount * 180f));
+        rect.sizeDelta = new Vector2(1100f, 160f);
+
+        contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 180f);
+        headerCount++;
+
+    }
+
     IEnumerator AddRepoItemsAfterDelay()
     {
         yield return new WaitForSeconds(0f);
+
         foreach (RepositoryData data in repoDataList)
         {
-            AddRepoItem(data);
+            if (data.language != null)
+                if (repoByLanguage.ContainsKey(data.language))
+                    repoByLanguage[data.language].Add(data);
+                else
+                    repoByLanguage.Add(data.language, new List<RepositoryData> { data });
+
+        }
+
+        //foreach (RepositoryData data in repoDataList)
+        //{
+        //    AddRepoItem(data);
+        //}
+
+        foreach (KeyValuePair<string, List<RepositoryData>> pair in repoByLanguage)
+        {
+            AddHeader(pair.Key, pair.Value[0].languageColor);
+
+            foreach (RepositoryData data in pair.Value)
+            {
+                AddRepoItem(data);
+            }
         }
 
         if (Screen.orientation == ScreenOrientation.LandscapeLeft || Screen.orientation == ScreenOrientation.LandscapeRight)
@@ -480,3 +542,5 @@ public class Joke
 {
     public string value;
 }
+
+
