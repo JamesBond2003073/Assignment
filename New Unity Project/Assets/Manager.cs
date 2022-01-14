@@ -49,6 +49,8 @@ public class Manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DeviceChange.OnOrientationChange += HandleOrientationChange;
+
         refreshUIRect = refreshUI.GetComponent<RectTransform>();
         refreshUIImage = refreshUI.GetComponent<Image>();
         refreshUIArrowRect = refreshUI.transform.GetChild(0).GetComponent<RectTransform>();
@@ -105,6 +107,28 @@ public class Manager : MonoBehaviour
             backButton.SetActive(true);
         }
 
+    }
+
+    public void HandleOrientationChange(ScreenOrientation orientation)
+    {
+
+        Debug.Log("Orientation changed to- " + orientation.ToString());
+
+        switch (orientation)
+        {
+            case ScreenOrientation.LandscapeLeft:
+            case ScreenOrientation.LandscapeRight:
+                contentRect.sizeDelta += new Vector2(0f, 50 * contentRect.transform.childCount);
+                starredContentRect.sizeDelta += new Vector2(0f, 50 * starredContentRect.transform.childCount);
+                break;
+
+            case ScreenOrientation.Portrait:
+            case ScreenOrientation.PortraitUpsideDown:
+                contentRect.sizeDelta -= new Vector2(0f, 50 * contentRect.transform.childCount);
+                starredContentRect.sizeDelta -= new Vector2(0f, 50 * starredContentRect.transform.childCount);
+                break;
+
+        }
     }
 
     public void ToggleOptionsMenu()
@@ -310,6 +334,18 @@ public class Manager : MonoBehaviour
         foreach (RepositoryData data in repoDataList)
         {
             AddRepoItem(data);
+        }
+
+        if (Screen.orientation == ScreenOrientation.LandscapeLeft || Screen.orientation == ScreenOrientation.LandscapeRight)
+        {
+            Debug.Log("Landscape Detected");
+            contentRect.sizeDelta += new Vector2(0f, 50 * contentRect.transform.childCount);
+            starredContentRect.sizeDelta += new Vector2(0f, 50 * starredContentRect.transform.childCount);
+        }
+
+        foreach (Transform child in starredContentRect)
+        {
+            Destroy(child.gameObject);
         }
 
         isLoaded = true;

@@ -21,12 +21,9 @@ public class ItemFunctions : MonoBehaviour
     public Vector2 refVel1 = Vector2.zero;
     public Vector2 refVel2 = Vector2.zero;
     public Vector2 refVel3 = Vector2.zero;
-    public Vector2 refVel4 = Vector2.zero;
-    public Vector2 refVel5 = Vector2.zero;
-    public Vector2 refVel6 = Vector2.zero;
     private float smoothTime = 3f;
 
-    private float minRectHeight;
+    private float minRectY;
     private float targetRectY;
     public float targetRectHeight;
     private float targetImageRootRectHeight;
@@ -101,7 +98,7 @@ public class ItemFunctions : MonoBehaviour
 
         if (!isExpanded)
         {
-            minRectHeight = rect.anchoredPosition.y;
+            minRectY = rect.sizeDelta.y;
             targetRectY = 400f;
             targetRectHeight -= 120f;
             targetImageRootRectHeight += 100f;
@@ -123,7 +120,7 @@ public class ItemFunctions : MonoBehaviour
         }
         else
         {
-            minRectHeight = rect.anchoredPosition.y;
+            minRectY = rect.sizeDelta.y;
             targetRectY = 200f;
             targetRectHeight += 120f;
             targetImageRootRectHeight -= 100f;
@@ -152,8 +149,8 @@ public class ItemFunctions : MonoBehaviour
         rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
         rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, new Vector2(rect.anchoredPosition.x, targetRectHeight), ref refVel2, smoothTime * Time.deltaTime);
         imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
-        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Manager.GetPercent(rect.anchoredPosition.y, minRectHeight, targetRectHeight) * (targetRepoNameTop / 100));
-        starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Manager.GetPercent(rect.anchoredPosition.y, minRectHeight, targetRectHeight) * (targetStarY / 100));
+        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
+        starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Manager.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));
     }
 
     public void ShiftDown(int siblingIndex)
