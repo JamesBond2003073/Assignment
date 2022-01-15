@@ -282,21 +282,21 @@ public class Manager : MonoBehaviour
 
             if (!child.gameObject.CompareTag("Header"))
             {
-                ColorBlock block = child.GetComponent<Button>().colors;
+                ColorBlock block = child.GetChild(0).GetComponent<Button>().colors;
                 block.selectedColor = Color.white;
                 block.highlightedColor = Color.white;
-                child.GetComponent<Button>().colors = block;
+                child.GetChild(0).GetComponent<Button>().colors = block;
                 child.GetComponent<Animator>().runtimeAnimatorController = animControllerLoading;
                 child.GetComponent<Animator>().Play("Loading");
-                child.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
-                child.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
-                child.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                child.GetChild(2).GetChild(0).gameObject.SetActive(true);
-                child.GetChild(0).GetChild(0).GetComponent<Image>().sprite = default;
-                child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
-                child.GetChild(3).gameObject.SetActive(false);
-                child.GetChild(4).gameObject.SetActive(false);
-                child.GetChild(5).gameObject.SetActive(false);
+                child.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
+                child.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+                child.transform.GetChild(1).GetChild(1).GetChild(0).gameObject.SetActive(true);
+                child.transform.GetChild(1).GetChild(2).GetChild(0).gameObject.SetActive(true);
+                child.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().sprite = default;
+                child.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().color = Color.grey;
+                child.transform.GetChild(1).GetChild(3).gameObject.SetActive(false);
+                child.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
+                child.transform.GetChild(1).GetChild(5).gameObject.SetActive(false);
                 child.GetComponent<RectTransform>().anchoredPosition = new Vector2(540f, child.GetComponent<RectTransform>().anchoredPosition.y);
             }
 
@@ -323,7 +323,7 @@ public class Manager : MonoBehaviour
         else
         {
             go = GameObject.Instantiate(repoPrefab, starredContentRect.transform);
-            go.transform.GetChild(5).gameObject.SetActive(false);
+            go.transform.GetChild(1).GetChild(5).gameObject.SetActive(false);
             Util.starredItems.Add(go);
         }
 
@@ -332,23 +332,23 @@ public class Manager : MonoBehaviour
 
         //Set data 
         go.GetComponent<ItemFunctions>().repoData = repData;
-        go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
-        go.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
-        go.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.description;
-        go.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.language;
-        go.transform.GetChild(4).GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.totalStars;
-        go.transform.GetChild(4).GetChild(5).GetComponent<TextMeshProUGUI>().text = repData.forks;
+        go.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.username;
+        go.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = repData.repositoryName;
+        go.transform.GetChild(1).GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.description;
+        go.transform.GetChild(1).GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = repData.language;
+        go.transform.GetChild(1).GetChild(4).GetChild(3).GetComponent<TextMeshProUGUI>().text = repData.totalStars;
+        go.transform.GetChild(1).GetChild(4).GetChild(5).GetComponent<TextMeshProUGUI>().text = repData.forks;
 
         //Disable loading image
-        go.transform.GetChild(1).GetChild(0).gameObject.SetActive(false);
-        go.transform.GetChild(2).GetChild(0).gameObject.SetActive(false);
+        go.transform.GetChild(1).GetChild(1).GetChild(0).gameObject.SetActive(false);
+        go.transform.GetChild(1).GetChild(2).GetChild(0).gameObject.SetActive(false);
 
         //Handling item position in scroll list.
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
         if (!isStarredItem)
-            rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 220f) - (headerCount * 180f));
+            rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 210f) - (headerCount * 190f));
         else
             rect.anchoredPosition = new Vector2(520f, -100f - (go.transform.GetSiblingIndex() * 220f));
         rect.sizeDelta = new Vector2(1040f, 200f);
@@ -478,7 +478,7 @@ public class Manager : MonoBehaviour
         RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
-        rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 220f) - (headerCount * 180f));
+        rect.anchoredPosition = new Vector2(520f, -100f - (itemCount * 210f) - (headerCount * 190f));
         rect.sizeDelta = new Vector2(1100f, 160f);
 
         contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 180f);
@@ -557,8 +557,8 @@ public class Manager : MonoBehaviour
                 else
                     go = starredScrollRoot.transform.GetChild(0).GetChild(0).GetChild(siblingIndex).gameObject;
                 Debug.Log(go.name);
-                go.transform.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.white;
-                go.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+                go.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().color = Color.white;
+                go.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
             }
         }
     }

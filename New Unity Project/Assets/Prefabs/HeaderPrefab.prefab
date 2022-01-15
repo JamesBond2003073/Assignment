@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 242864355969794083}
   - component: {fileID: -571972356209174201}
   - component: {fileID: 1041932399657894627}
+  - component: {fileID: 1371304744059514591}
   m_Layer: 5
   m_Name: HeaderPrefab
   m_TagString: Untagged
@@ -112,6 +113,7 @@ MonoBehaviour:
   userNameRect: {fileID: 0}
   repoNameRect: {fileID: 0}
   starRect: {fileID: 0}
+  buttonRect: {fileID: 0}
   refVel1: {x: 0, y: 0}
   refVel2: {x: 0, y: 0}
   refVel3: {x: 0, y: 0}
@@ -196,6 +198,34 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1371304744059514591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141590141136944164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c162dc854d2f24fa639ba0623de5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 32
+  spread: 0
+  offsetAngle: 90
+  offsetDistance: 8
+  offset: {x: 0, y: 0}
+  color: {r: 0, g: 0, b: 0, a: 0.3}
+  inset: 0
+  blendMode: 0
+  useCasterAlpha: 1
+  ignoreCasterColor: 0
+  colorBleedMode: 0
+  shadowAsSibling: 0
+  cutout: 0
+  baked: 0
+  modifiedFromInspector: 0
+  bakedShadows: []
 --- !u!1 &3845909403630518683
 GameObject:
   m_ObjectHideFlags: 0

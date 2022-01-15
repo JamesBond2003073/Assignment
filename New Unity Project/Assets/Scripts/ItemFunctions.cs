@@ -18,6 +18,7 @@ public class ItemFunctions : MonoBehaviour
     public RectTransform userNameRect;
     public RectTransform repoNameRect;
     public RectTransform starRect;
+    public RectTransform buttonRect;
     public Vector2 refVel1 = Vector2.zero;
     public Vector2 refVel2 = Vector2.zero;
     public Vector2 refVel3 = Vector2.zero;
@@ -25,6 +26,7 @@ public class ItemFunctions : MonoBehaviour
 
     private float minRectY;
     private float targetRectY;
+    private float targetBtnY;
     public float targetRectHeight;
     private float targetImageRootRectHeight;
     private float targetRepoNameTop;
@@ -53,9 +55,10 @@ public class ItemFunctions : MonoBehaviour
         if (transform.gameObject.CompareTag("Header"))
             return;
 
-        userNameRect = this.transform.GetChild(1).GetComponent<RectTransform>();
-        repoNameRect = this.transform.GetChild(2).GetComponent<RectTransform>();
-        starRect = this.transform.GetChild(5).GetComponent<RectTransform>();
+        buttonRect = this.transform.GetChild(0).GetComponent<RectTransform>();
+        userNameRect = this.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>();
+        repoNameRect = this.transform.GetChild(1).GetChild(2).GetComponent<RectTransform>();
+        starRect = this.transform.GetChild(1).GetChild(5).GetComponent<RectTransform>();
 
 
 
@@ -67,7 +70,7 @@ public class ItemFunctions : MonoBehaviour
     {
         if (!isStarred)
         {
-            this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(true);
+            this.transform.GetChild(1).GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(true);
 
             //raise addStarItemEvent to add item to starred list
             addStarItemEvent.Raise(repoData);
@@ -76,7 +79,7 @@ public class ItemFunctions : MonoBehaviour
         }
         else
         {
-            this.transform.GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(false);
+            this.transform.GetChild(1).GetChild(5).GetChild(0).GetChild(0).gameObject.SetActive(false);
 
             ////raise removeStarItemEvent to remove item from starred list
             removeStarItemEvent.Raise(starredItem);
@@ -120,15 +123,16 @@ public class ItemFunctions : MonoBehaviour
         {
             minRectY = rect.sizeDelta.y;
             targetRectY = 400f;
-            targetRectHeight -= 120f;
+            targetBtnY = -100f;
+            //targetRectHeight -= 220f;
             targetImageRootRectHeight += 100f;
             targetRepoNameTop += 200f;
             targetStarY += 100f;
 
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y + 226f);
 
-            this.transform.GetChild(3).gameObject.SetActive(true);
-            this.transform.GetChild(4).gameObject.SetActive(true);
+            this.transform.GetChild(1).GetChild(3).gameObject.SetActive(true);
+            this.transform.GetChild(1).GetChild(4).gameObject.SetActive(true);
 
             //Raise shiftDown event to adjust position of other items below the target
             shiftDownEvent.Raise(transform.GetSiblingIndex());
@@ -137,15 +141,16 @@ public class ItemFunctions : MonoBehaviour
         {
             minRectY = rect.sizeDelta.y;
             targetRectY = 200f;
-            targetRectHeight += 120f;
+            targetBtnY = 0f;
+            //targetRectHeight += 220f;
             targetImageRootRectHeight -= 100f;
             targetRepoNameTop -= 200f;
             targetStarY -= 100f;
 
             contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, contentRect.sizeDelta.y - 226f);
 
-            this.transform.GetChild(3).gameObject.SetActive(false);
-            this.transform.GetChild(4).gameObject.SetActive(false);
+            this.transform.GetChild(1).GetChild(3).gameObject.SetActive(false);
+            this.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
 
             //Raise shiftUp event to adjust position of other items below the target
             shiftUpEvent.Raise(transform.GetSiblingIndex());
@@ -160,17 +165,18 @@ public class ItemFunctions : MonoBehaviour
         rect.anchoredPosition = Vector2.SmoothDamp(rect.anchoredPosition, new Vector2(rect.anchoredPosition.x, targetRectHeight), ref refVel2, smoothTime * Time.deltaTime);
         if (this.gameObject.CompareTag("Header"))
             return;
-        rect.sizeDelta = Vector2.SmoothDamp(rect.sizeDelta, new Vector2(rect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
-        imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
-        repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
-        starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));
+        buttonRect.sizeDelta = Vector2.SmoothDamp(buttonRect.sizeDelta, new Vector2(buttonRect.sizeDelta.x, targetRectY), ref refVel1, smoothTime * Time.deltaTime);
+        buttonRect.anchoredPosition = Vector2.SmoothDamp(buttonRect.anchoredPosition, new Vector2(buttonRect.anchoredPosition.x, targetBtnY), ref refVel3, smoothTime * Time.deltaTime);
+        //imageRootRect.anchoredPosition = Vector2.SmoothDamp(imageRootRect.anchoredPosition, new Vector2(imageRootRect.anchoredPosition.x, targetImageRootRectHeight), ref refVel3, smoothTime * Time.deltaTime);
+        //repoNameRect.offsetMax = new Vector2(repoNameRect.offsetMax.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetRepoNameTop / 100));
+        //starRect.anchoredPosition = new Vector2(starRect.anchoredPosition.x, Util.GetPercent(rect.sizeDelta.y, minRectY, targetRectY) * (targetStarY / 100));
     }
 
     //Method subscribed to shiftDownEvent
     public void ShiftDown(int siblingIndex)
     {
         if (siblingIndex < this.transform.GetSiblingIndex())
-            targetRectHeight -= 220f;
+            targetRectHeight -= 210f;
 
     }
 
@@ -178,7 +184,7 @@ public class ItemFunctions : MonoBehaviour
     public void ShiftUp(int siblingIndex)
     {
         if (siblingIndex < this.transform.GetSiblingIndex())
-            targetRectHeight += 220f;
+            targetRectHeight += 210f;
     }
 
 
